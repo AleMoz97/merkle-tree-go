@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"merkle-tree-go/merkletree"
 	"os"
+
+	"github.com/AleMoz97/merkle-tree-go/merkletree"
 )
 
 func main() {
