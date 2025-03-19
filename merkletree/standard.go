@@ -27,20 +27,14 @@ func NewStandardMerkleTree[T any](values []T, options MerkleTreeOptions) *Standa
 // Verify verifica una proof di Merkle per un valore specifico
 func VerifyStandardMerkleTree[T any](root BytesLike, leaf T, proof []BytesLike) bool {
 	leafHash := StandardLeafHash(leaf)
-	leafHashVal, err := ToHex(leafHash)
-	if err != nil {
-		fmt.Errorf("Error: ", err)
-	}
-	// Debug
-	fmt.Println("📌 DEBUG VerifyStandardMerkleTree: Hash calcolato per la leaf:", leafHashVal)
 
 	// Calcola la root derivata dalla proof
 	computedRoot := ProcessProof(leafHash, proof, StandardNodeHash)
 	computedRootVal, err := ToHex(computedRoot)
+	if err != nil {
+		fmt.Errorf("Error: %s", err)
+	}
 	rootVal, err := ToHex(root)
-	// Debug
-	fmt.Println("📌 DEBUG VerifyStandardMerkleTree: Root derivata:", computedRootVal)
-	fmt.Println("📌 DEBUG VerifyStandardMerkleTree: Root attesa:", rootVal)
 
 	// Confronto tra root derivata e attesa
 	return computedRootVal == rootVal

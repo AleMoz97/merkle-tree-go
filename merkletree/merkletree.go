@@ -32,15 +32,7 @@ func (m *MerkleTreeImpl[T]) getLeafIndex(leaf interface{}) int {
 	default:
 		hashedLeaf := m.LeafHash(v.(T))
 		if index, found := m.HashLookup[hashedLeaf]; found {
-			//fmt.Printf("📌 DEBUG getLeafIndex: Trovato %s -> Index %d\n", hashedLeaf, index)
 			return index
-		}
-
-		// Se non trova l'hash, stampiamo il contenuto della HashLookup per capire il problema
-		//fmt.Println("❌ ERRORE: Il valore richiesto non esiste nel Merkle Tree!")
-		//fmt.Println("📋 DEBUG Contenuto della HashLookup Table:")
-		for key, val := range m.HashLookup {
-			fmt.Printf("  %s -> Index %d\n", key, val)
 		}
 		panic("❌ ERRORE: Il valore richiesto non esiste nel Merkle Tree")
 	}
@@ -89,12 +81,10 @@ func (m *MerkleTreeImpl[T]) LeafHashFromInput(leaf interface{}) HexString {
 			panic(fmt.Sprintf("❌ ERRORE: Indice foglia %d fuori dai limiti!", v))
 		}
 		hashed := m.LeafHash(m.Values[v].Value)
-		//fmt.Printf("📌 DEBUG LeafHashFromInput: Recuperato da indice %d → Hash: %s\n", v, hashed)
 		return hashed
 
 	default:
 		hashed := m.LeafHash(v.(T))
-		//fmt.Printf("📌 DEBUG LeafHashFromInput: Hash calcolato per il valore %v → %s\n", v, hashed)
 		return hashed
 	}
 }
@@ -114,29 +104,11 @@ func (m *MerkleTreeImpl[T]) GetProof(leaf interface{}) []HexString {
 		bytesTree[i] = hexStrVal
 	}
 
-	//fmt.Printf("📌 DEBUG GetProof: ValueIndex: %d, TreeIndex: %d (Lunghezza albero: %d)\n", valueIndex, treeIndex, len(m.Tree))
-
-	// Debug dell'albero prima di calcolare la proof
-	//fmt.Println("📋 DEBUG Albero di Merkle:")
-	/*for i, node := range m.Tree {
-		fmt.Printf("  [%d] %s\n", i, node)
-	}*/
-
 	proof := GetProof(bytesTree, treeIndex)
 
 	if len(proof) == 0 {
 		panic("❌ ERRORE: Proof generata è vuota!")
 	}
-
-	// Debug della proof generata
-	/*fmt.Println("🔍 DEBUG Proof Generata:")
-	for i, step := range proof {
-		stepVal, err := ToHex(step)
-		if err != nil {
-			fmt.Errorf("Error: ", err)
-		}
-		fmt.Printf("  Step %d: %s\n", i, stepVal)
-	}*/
 
 	return proof
 }
@@ -153,19 +125,6 @@ func (m *MerkleTreeImpl[T]) Verify(leaf interface{}, proof []HexString) bool {
 	}
 
 	leafHash := m.LeafHashFromInput(leaf)
-
-	// Debug della verifica
-	//fmt.Println("📌 DEBUG Verify: Hash calcolato per la leaf:", leafHash)
-
-	/*if _, found := m.HashLookup[leafHash]; !found {
-		fmt.Println("❌ ERRORE: La foglia cercata non è presente in HashLookup!")
-		fmt.Println("📋 DEBUG HashLookup Table:")
-		for k, v := range m.HashLookup {
-			fmt.Printf("  %s -> Index %d\n", k, v)
-		}
-		return false
-	}*/
-
 	hashFunc := m.NodeHash
 	if hashFunc == nil {
 		hashFunc = StandardNodeHash
@@ -173,15 +132,9 @@ func (m *MerkleTreeImpl[T]) Verify(leaf interface{}, proof []HexString) bool {
 
 	computedRoot := ProcessProof(leafHash, bytesProof, hashFunc)
 
-	//fmt.Println("📌 DEBUG Verify: Root derivata:", computedRoot)
-	//fmt.Println("📌 DEBUG Verify: Root attuale:", m.Root())
-
 	if computedRoot != m.Root() {
-		fmt.Println("❌ ERRORE: La proof non verifica correttamente il valore!")
 		return false
 	}
-
-	fmt.Println("✅ SUCCESSO: La proof è valida!")
 	return true
 }
 
