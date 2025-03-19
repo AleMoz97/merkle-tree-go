@@ -78,7 +78,6 @@ func MakeMerkleTree(hashes []BytesLike, nodeHash NodeHash) []HexString {
 }
 
 // GetProof restituisce la proof di Merkle per un nodo specifico
-// GetProof genera una proof di Merkle per un nodo specifico nell'albero
 func GetProof(tree []BytesLike, index int) []HexString {
 	CheckLeafNode(tree, index)
 	var proof []HexString
@@ -292,13 +291,6 @@ func PrepareMerkleTree[T any](values []T, options MerkleTreeOptions, leafHash fu
 		}(),
 		nodeHash,
 	)
-
-	// 📌 Debug: Stampiamo l'albero generato
-	fmt.Println("📋 Albero di Merkle generato:")
-	for i, node := range tree {
-		fmt.Printf("  [%d] %s\n", i, node)
-	}
-
 	// Assegniamo gli indici corretti alle foglie
 	indexedValues := make([]struct {
 		Value     T
@@ -314,9 +306,6 @@ func PrepareMerkleTree[T any](values []T, options MerkleTreeOptions, leafHash fu
 			Value:     hv.Value,
 			TreeIndex: correctedIndex,
 		}
-
-		// Debug
-		//fmt.Printf("📌 DEBUG PrepareMerkleTree: Assegnato TreeIndex %d per ValueIndex %d\n", correctedIndex, hv.ValueIndex)
 	}
 
 	// Verifica che gli indici siano validi
