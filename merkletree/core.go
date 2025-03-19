@@ -60,7 +60,6 @@ func MakeMerkleTree(hashes []BytesLike, nodeHash NodeHash) []HexString {
 		if err != nil {
 			fmt.Errorf("Error: ", err)
 		}
-		fmt.Println(leaf)
 		leaves[i] = leaf
 	}
 	// Costruisce l'albero di Merkle
